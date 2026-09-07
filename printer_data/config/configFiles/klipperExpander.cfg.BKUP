@@ -5,37 +5,34 @@
 [mcu expander]
 serial: /dev/serial/by-id/usb-Klipper_stm32f042x6_080025001343305645303820-if00
 restart_method: command
-# Firmware setup
-# https://github.com/VoronDesign/Voron-Hardware/blob/master/Klipper_Expander/Documentation/Setup_and_Flashing_Guide.md
-#
 
+# kick_start_time: 0.5
 [fan_generic Nevermore]
 pin: expander:PA1
 max_power: 0.95
 cycle_time: 0.010       # DO NOT go below this; higher stops timing errors
 hardware_pwm: false     # MANDATORY for STM32F042 MCUs
+# kick_start_time: 0.3    # 300ms is enough to break stiction without wasting power
+# off_below: 0.15         # Prevents Klipper from trying to run the fan below 15% where it stalls
 
-
-# Works: skr mini muc temp controlled fan
-[temperature_fan electronics_fan]
-pin:  expander:PA0
-max_power: 0.60
-sensor_type: temperature_mcu
-sensor_mcu: mcu
-control: watermark
-max_delta: 3.0
-min_temp: 0
-max_temp: 80
-target_temp: 25
-max_speed: 1.0
-shutdown_speed: 0.0
-max_power: 0.45
-cycle_time: 0.010       # DO NOT go below this; higher stops timing errors
-hardware_pwm: false     # MANDATORY for STM32F042 MCUs
-kick_start_time: 0.3    # 300ms is enough to break stiction without wasting power
-off_below: 0.15         # Prevents Klipper from trying to run the fan below 15% where it stalls
-
-
+# # Works: skr mini muc temp controlled fan
+# [temperature_fan electronics_fan]
+# pin:  expander:PA0
+# max_power: 0.60
+# sensor_type: temperature_mcu
+# sensor_mcu: mcu
+# control: watermark
+# max_delta: 3.0
+# min_temp: 0
+# max_temp: 80
+# target_temp: 25
+# max_speed: 1.0
+# shutdown_speed: 0.0
+# max_power: 0.45
+# cycle_time: 0.010       # DO NOT go below this; higher stops timing errors
+# hardware_pwm: false     # MANDATORY for STM32F042 MCUs
+# kick_start_time: 0.3    # 300ms is enough to break stiction without wasting power
+# off_below: 0.15         # Prevents Klipper from trying to run the fan below 15% where it stalls
 
 
 # [controller_fan stepper_driver_fan]
@@ -47,16 +44,19 @@ off_below: 0.15         # Prevents Klipper from trying to run the fan below 15% 
 # # You can change this time or remove the line to use the 30s default.
 # max_power: 0.45
 
-[controller_fan stepper_driver_fan]
-pin: expander:PA2  # <-- IMPORTANT: Change this to your fan's signal pin
-stepper: stepper_x, stepper_y, stepper_z, extruder
-# Add any other steppers you want to monitor (e.g., stepper_z1, extruder1)
-idle_timeout: 30
-# The fan will stay on for 30 seconds after the steppers disable.
-# You can change this time or remove the line to use the 30s default.
-max_power: 1.00
-cycle_time: 0.010       # DO NOT go below this; higher stops timing errors
-hardware_pwm: false     # MANDATORY for STM32F042 MCUs
+
+# [controller_fan stepper_driver_fan]
+# pin: expander:PA2  # <-- IMPORTANT: Change this to your fan's signal pin
+# stepper: stepper_x, stepper_y, stepper_z, extruder
+# # Add any other steppers you want to monitor (e.g., stepper_z1, extruder1)
+# idle_timeout: 30
+# # The fan will stay on for 30 seconds after the steppers disable.
+# # You can change this time or remove the line to use the 30s default.
+# max_power: 1.00
+# cycle_time: 0.010       # DO NOT go below this; higher stops timing errors
+# hardware_pwm: false     # MANDATORY for STM32F042 MCUs
+# # kick_start_time: 0.3    # 300ms is enough to break stiction without wasting power
+# # off_below: 0.15         # Prevents Klipper from trying to run the fan below 15% where it stalls
 
 
 #####################################################################
@@ -87,10 +87,10 @@ hardware_pwm: false     # MANDATORY for STM32F042 MCUs
 
 [fan]
 pin: expander:PA3
-max_power: 1.0
-cycle_time: 0.010       # DO NOT go below this; higher stops timing errors
-hardware_pwm: false     # MANDATORY for STM32F042 MCUs
-
+shutdown_speed: 0
+kick_start_time: 0.3    # 300ms is enough to break stiction without wasting power
+off_below: 0.15         # Prevents Klipper from trying to run the fan below 15% where it stalls
+cycle_time: 0.05        # 20Hz PWM frequency — easier on the Expander's tiny MOSFETs
 
 [static_digital_output onboardLED]
 pins: !expander:PA4
@@ -101,6 +101,7 @@ pins: !expander:PA4
 # min_temp: 0
 # max_temp: 80
 # gcode_id: C
+
 [temperature_sensor Chamber_Temp]
 sensor_type: Generic 3950 ### < ADD YOUR OWN SENSOR TYPE HERE
 sensor_pin: expander:PA6 ### < ADD YOUR OWN PIN HERE
